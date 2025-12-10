@@ -1,140 +1,154 @@
-# ArcSight Strategic Architecture  
+# ArcSight Strategic Architecture
 
-## Phase 1 vs Phase 2 Structure — Final Decision Document
+## Phase 1 vs Phase 2 Structure — Final Decision Document (v1.2.0)
 
-This document defines ArcSight's *high-level structural strategy*:  
+This document defines ArcSight's high-level structural strategy:
 
-**Separate package folders in Phase 1, monorepo in Phase 2.**
+**Phase 1 uses isolated packages inside a single repository.  
+Phase 2 migrates to a unified monorepo.**
 
 It answers:
 
-- What structure we use now  
-- When to switch to a monorepo  
-- The criteria for migration  
-- Why not start with a monorepo  
-- What Phase 2 will introduce
+- What structure we use now
+- When we switch to a monorepo
+- Why not start with a monorepo
+- Criteria for migration
+- What Phase 2 unlocks
 
-This document is your **architectural constitution** for directory-level decisions.
+This document is your **architectural constitution** for repository and directory-level decisions.
 
 ---
 
 # ✅ FINAL DECISION
 
-### **Stay separate folders for Phase 1.  
-Migrate to a monorepo in Phase 2.**
+**Phase 1 → Isolated packages (within one repository)**  
+**Phase 2 → Unified monorepo**
 
-This is the optimal approach for:
+This is the optimal strategy for:
 
-- speed  
-- clarity  
-- determinism  
-- future scalability  
-- avoiding early tooling overhead  
+- speed
+- clarity
+- strict determinism
+- minimized tooling overhead
+- long-term scalability
 
 ---
 
-# 🟦 WHY SEPARATE FOLDERS ARE IDEAL FOR PHASE 1
+# 🟦 WHY ISOLATED PACKAGES (WITHIN ONE REPO) ARE IDEAL FOR PHASE 1
 
-Phase 1 builds three core components:
+Phase 1 builds the three foundational components:
 
-- ✔ deterministic engine core (`arcsight-wedge`)  
-- ✔ webhook runtime (`arcsight-github-app`)  
-- ✔ CLI for testing and golden suites (`arcsight-cli`)  
+- ✔ deterministic engine core (`arcsight-wedge`)
+- ✔ webhook runtime (`arcsight-github-app`)
+- ✔ CLI for golden testing (`arcsight-cli`)
 
 During this phase:
 
-- clarity beats structure  
-- boundaries enforce correctness  
-- tooling overhead slows development  
-- each package evolves independently  
+- clarity beats structure
+- boundaries enforce purity
+- tooling overhead is wasteful
+- each package evolves independently
+- cross-package sharing is forbidden
+- determinism is paramount
 
-Separate folders give you:
+## 📌 Phase-1 Structural Rule
 
-- ⚡ fast iteration  
-- 🎯 clean mental model  
-- 🧪 easy golden testing  
-- 🛡️ strict determinism guarantees  
-- 🚫 zero cross-package entanglement  
+**All Phase-1 packages live in a single repository but MUST remain fully isolated.**
 
-Most Phase 1 work happens entirely within:
+No imports between packages.  
+No shared code.  
+No shared layer or utilities.
 
-- `arcsight-wedge`  
-- `arcsight-github-app`  
-- `arcsight-cli`
+Isolation improves:
 
-A monorepo adds no benefit yet — only cost.
+- ⚡ iteration speed
+- 🎯 conceptual clarity
+- 🧪 golden test stability
+- 🛡️ deterministic guarantees
+- 🚫 prevents architectural coupling
+
+A monorepo adds zero benefit here and introduces unnecessary cognitive cost.
 
 ---
 
-# 🟩 WHY A MONOREPO BECOMES NECESSARY IN PHASE 2
+# 🟩 WHY A MONOREPO IS REQUIRED IN PHASE 2
 
-Phase 2 introduces major capabilities:
+Phase 2 introduces major system capabilities:
 
-- 🔥 Rulepack modularization  
-- 🔥 Safety Sentinel service  
-- 🔥 Shadow-mode analyzer rollouts  
-- 🔥 Schema evolution + adapters  
-- 🔥 Dashboard (SaaS)  
-- 🔥 Drift detection + hotspot analysis  
-- 🔥 Enterprise rulepacks  
-- 🔥 Telemetry indexing + analytics  
+- Rulepack modularization
+- Safety Sentinel
+- Shadow-mode analyzers
+- Schema evolution + adapters
+- Dashboard / SaaS
+- Drift detection + analytics
+- Enterprise rulepacks
+- Telemetry ingestion + indexing
 
 These require:
 
-### 1️⃣ Shared types across packages  
+### 1️⃣ Shared canonical types and schemas
 
-Without a monorepo, duplication becomes dangerous.
+Without shared definitions, adapters and rulepacks cannot evolve safely.
 
-### 2️⃣ Versioned analyzer builds  
+### 2️⃣ Shared golden fixtures
 
-Shadow engine rollout demands workspace versioning.
+CLI and engine must share one source of truth.
 
-### 3️⃣ Shared golden fixtures  
+### 3️⃣ Unified build + test pipeline
 
-CLI and engine must share a single source of truth.
+Required once multiple services and analyzers exist.
 
-### 4️⃣ Unified build + test pipeline  
+### 4️⃣ Multi-engine builds (LIVE + SHADOW)
 
-Needed once multiple services exist.
+Shadow rollout requires building:
 
-### 5️⃣ Sentinel running multiple versions of the engine  
+- `analyzerVersion` X (live)
+- `analyzerVersion` X+1 (shadow)
 
-Clean imports only possible in a monorepo.
+simultaneously, using shared types and schema definitions.
 
-### 6️⃣ Dashboard needs structural access to telemetry + shared types  
+This is only possible in a monorepo.
 
-### 7️⃣ DX tooling becomes important  
+### 5️⃣ Sentinel lifecycle (Phase 2)
 
-(For rapid cross-package changes)
+Sentinel relies on:
+
+- synchronized analyzer versions
+- deterministic drift baselines
+- shared adapter logic
+- stable schema evolution
+
+None of this can be coordinated across scattered packages.
 
 ---
 
 # 📅 THE PERFECT MIGRATION MOMENT
 
-You migrate to a monorepo **after Phase 1** and **before Phase 2**.
+Migration MUST occur:
 
-Migration conditions:
+**after Phase-1 engine output is drift-stable across all golden repos,  
+and before Phase 2 development begins.**
 
-- engine deterministic  
-- golden tests stable  
-- runtime end-to-end path working  
-- envelopes versioned  
-- schema adapters defined  
-- degraded mode working  
-- DLQ functioning  
-- no rulepack explosion yet  
+## 📌 Zero-Drift Requirement (NEW RULE)
 
-This is when:
+Before monorepo migration:
 
-- cost is lowest  
-- benefit is highest  
-- no refactor is required  
+**The Phase-1 analyzer MUST produce a zero-drift, golden-stable baseline on all golden test repositories.**  
+Sentinel drift detection and shadow promotion rules (Docs #16 & #17) are invalid until this baseline is fully stable.
+
+Once the engine is stable and deterministic:
+
+- runtime end-to-end path works
+- schema adapters exist
+- degraded mode is correct
+- DLQ is functional
+- no rulepack explosion yet
+
+→ migration is safe, low-cost, and high-value.
 
 ---
 
-# 🧠 WHAT THE PHASE 2 MONOREPO LOOKS LIKE
-
-Structure:
+# 🧠 WHAT PHASE 2'S MONOREPO LOOKS LIKE
 
 ```
 /arcsight
@@ -147,35 +161,32 @@ Structure:
     /arc-sentinel
 ```
 
-Tooling:
+Supported by:
 
-- `pnpm workspaces` or  
-- `turborepo` or  
-- `yarn workspaces`
+- `pnpm workspaces`
+- Turborepo
+- or Yarn workspaces
 
-Migration time: **2–3 hours.**  
-No rewrite required.
+Migration time: **~2–3 hours, zero rewrite.**
 
 ---
 
-# 🎯 TL;DR — STRATEGIC DECISION
+# 🟦 TL;DR — STRATEGIC DECISION
 
-### **Phase 1 → Keep separate folders**  
+**Phase 1 → Isolated packages (no shared code)**
 
-Fastest, clearest, safest for correctness.
+Fastest, clearest, safest for determinism and purity.
 
-### **Phase 2 → Move to a monorepo**  
+**Phase 2 → Unified monorepo**
 
-Required for scalability, rulepacks, sentinel, dashboard, and multi-version engines.
+Required for rulepacks, Sentinel, schema evolution, dashboard, multi-engine builds, and long-term scalability.
 
-You are making the exact tradeoff used by Stripe, Google, Meta, and Snyk.
-
-This document governs all future directory and structural decisions.
+This is the same evolutionary path used by Stripe, Google (Tricorder), Meta (Infer), and Snyk.
 
 ---
 
 ## References
 
+- [Phase-1 Folder Scaffold](./02-phase1-folder-scaffold.md)
 - [Full System Roadmap](./03-full-system-roadmap.md)
-- [Phase 1 Folder Scaffold](./02-phase1-folder-scaffold.md)
-- [Monorepo Migration](./05-monorepo-migration.md)
+- [Monorepo Migration](./5B-monorepo-migration.md)

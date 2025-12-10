@@ -1,0 +1,118 @@
+name: Documentation Consistency Monitor
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - '*.md'
+      - '.github/workflows/docs-consistency-monitor.yml'
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - '*.md'
+      - '.github/workflows/docs-consistency-monitor.yml'
+
+jobs:
+  docs-consistency-check:
+    name: ArcSight Documentation Consistency Monitor
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies (if needed)
+        run: |
+          # Add any required tools here (e.g., markdown-link-check, etc.)
+          npm install -g markdown-link-check || true
+      
+      - name: Run Documentation Consistency Monitor
+        run: |
+          echo "🔍 Running ArcSight Documentation Consistency Monitor..."
+          echo ""
+          echo "=== CROSS-REFERENCE VALIDATION ==="
+          
+          # Check for broken cross-references
+          echo "Checking for broken cross-references..."
+          BROKEN_REFS=$(grep -r "05-monorepo-migration\|06-dependency-contract\|10-cursor-development-protocol" *.md 2>/dev/null || true)
+          if [ -n "$BROKEN_REFS" ]; then
+            echo "❌ Found broken cross-references:"
+            echo "$BROKEN_REFS"
+            exit 1
+          fi
+          echo "✅ No broken cross-references found"
+          
+          echo ""
+          echo "=== STRUCTURE COMPLIANCE CHECK ==="
+          
+          # Check Tier B documents have Cross-References sections
+          echo "Checking Tier B documents for Cross-References sections..."
+          TIER_B_DOCS="5A-dependency-contract.md 06-invariants-contract.md 06A-invariant-test-suite-specification.md 06B-error-codes-catalog.md 06C-invariant-enforcement-checker.md 06X-invariant-system-index.md 07-determinism-contract.md 08-schema-evolution-and-adapters.md 09-golden-test-governance.md 10-runtime-and-engine-contract.md 11-schema-evolution-contract.md 12-rulepack-versioning-contract.md 13-limits-and-sandbox-policy.md 14-repo-snapshot-contract.md 15-envelope-format-spec.md 16-sentinel-shadow-analysis-contract.md 17-analyzer-promotion-policy.md 18-enterprise-extension-namespaces.md 19-drift-detection-contract.md 20-deterministic-config-contract.md"
+          
+          for doc in $TIER_B_DOCS; do
+            if [ -f "$doc" ]; then
+              if ! grep -q "^## Cross-References\|^## 9. Cross-References" "$doc"; then
+                echo "⚠️  $doc: Missing or incorrectly named Cross-References section"
+              fi
+            fi
+          done
+          
+          echo "Checking Tier B documents for Change Log sections..."
+          for doc in $TIER_B_DOCS; do
+            if [ -f "$doc" ]; then
+              if ! grep -qi "Change Log\|change log" "$doc"; then
+                echo "⚠️  $doc: Missing Change Log section"
+              fi
+            fi
+          done
+          
+          echo ""
+          echo "=== FILE EXISTENCE CHECK ==="
+          
+          # Verify all expected documents exist
+          echo "Checking for required documents..."
+          REQUIRED_DOCS="00-docs-index-and-authoring-protocol.md 01-decision-phase1-vs-phase2.md 02-phase1-folder-scaffold.md 03-full-system-roadmap.md 04-usage-model.md 5A-dependency-contract.md 5B-monorepo-migration.md 06-invariants-contract.md 06A-invariant-test-suite-specification.md 06B-error-codes-catalog.md 06C-invariant-enforcement-checker.md 06X-invariant-system-index.md 07-determinism-contract.md 08-schema-evolution-and-adapters.md 09-golden-test-governance.md 10-runtime-and-engine-contract.md 10C-cursor-development-protocol.md 11-schema-evolution-contract.md 12-rulepack-versioning-contract.md 13-limits-and-sandbox-policy.md 14-repo-snapshot-contract.md 15-envelope-format-spec.md 16-sentinel-shadow-analysis-contract.md 17-analyzer-promotion-policy.md 18-enterprise-extension-namespaces.md 19-drift-detection-contract.md 20-deterministic-config-contract.md README.md"
+          
+          for doc in $REQUIRED_DOCS; do
+            if [ ! -f "$doc" ]; then
+              echo "❌ Missing required document: $doc"
+              exit 1
+            fi
+          done
+          echo "✅ All required documents present"
+          
+          echo ""
+          echo "=== LINK VALIDATION ==="
+          
+          # Basic link validation (check that referenced files exist)
+          echo "Validating internal markdown links..."
+          LINK_ERRORS=0
+          for file in *.md; do
+            # Extract markdown links
+            links=$(grep -oP '\[.*?\]\(\./[^)]+\)' "$file" 2>/dev/null || true)
+            for link in $links; do
+              # Extract the file path from the link
+              linked_file=$(echo "$link" | sed -n 's/.*(\.\/\(.*\))/\1/p')
+              if [ -n "$linked_file" ] && [ ! -f "$linked_file" ]; then
+                echo "❌ $file: Broken link to $linked_file"
+                LINK_ERRORS=$((LINK_ERRORS + 1))
+              fi
+            done
+          done
+          
+          if [ $LINK_ERRORS -gt 0 ]; then
+            echo "❌ Found $LINK_ERRORS broken link(s)"
+            exit 1
+          fi
+          echo "✅ All internal links valid"
+          
+          echo ""
+          echo "✅ Documentation Consistency Monitor: ALL CHECKS PASSED"
+          echo ""
+          echo "The documentation suite is consistent and compliant."
+

@@ -1,304 +1,359 @@
-# ArcSight — Full System Roadmap  
+# ArcSight Full System Roadmap
 
-### FINAL CTO SIGN-OFF  
+## FINAL CTO SIGN-OFF
 
-### Phase 1 → Phase 2 Complete Execution Plan
+### Phase 1 → Phase 2 Complete Execution Blueprint
 
-This document defines:
+This document defines the entire correct sequence for building ArcSight:
 
-- Architecture Blueprint  
-- Build Order  
-- Determinism Rules  
-- Canonicalization Rules  
-- Snapshot → Envelope Contract  
-- Cycle Detection  
-- Rulepacks  
-- Invariants  
-- Degraded Mode  
-- Schema Evolution  
-- Runtime Orchestration  
-- Golden Tests  
-- DLQ + retries  
-- Phase 2 Migration Plan  
-- Shadow Analyzer Rollout  
-- Enterprise Roadmap  
+- Architecture Blueprint
+- Determinism Requirements
+- Canonicalization
+- Snapshot → Envelope Pipeline
+- Graph Construction
+- Cycle Detection
+- Rulepacks
+- Invariants
+- Degraded Mode
+- Schema Evolution
+- Runtime Orchestration
+- Golden Tests
+- DLQ + Retries
+- Phase 2 Migration Plan
+- Shadow Analyzer Architecture
+- Enterprise Roadmap
 
-This is the **complete execution manual** for implementing ArcSight correctly.
-
----
-
-# 🟦 SECTION 1 — HIGH-LEVEL DECISION
-
-### ✅ Phase 1 = Separate Folders  
-
-### ✅ Phase 2 = Monorepo Migration  
-
-This structure is the optimal balance of:
-
-- speed  
-- clarity  
-- determinism  
-- future scalability  
-
-No changes needed. This is locked.
+This is the master execution document for ArcSight.  
+Every subsystem, every file, every invariant derives from this.
 
 ---
 
-# 🟦 SECTION 2 — WHY SEPARATE FOLDERS (PHASE 1)
+# 🟦 SECTION 1 — HIGH-LEVEL DECISION (Phase Structure)
 
-Phase 1 primarily builds:
+### ✅ Phase 1 = Isolated Packages (Same Repository, No Shared Types)
 
-- deterministic engine core  
-- GitHub runtime (webhook orchestrator)  
-- CLI (golden tests + developer tooling)
+**Packages:**
 
-Separate packages give us:
+- `arcsight-wedge` (deterministic engine)
+- `arcsight-cli` (developer tooling + golden tests)
+- `arcsight-github-app` (runtime orchestrator)
 
-- no workspace/tooling overhead  
-- fast iteration  
-- minimal cognitive load  
-- zero risk of circular imports  
-- guaranteed purity inside the engine  
+**Rules:**
 
-This is the **only correct** approach for Phase 1.
+- no shared utilities
+- no shared types
+- no workspaces
+- strict import boundaries
+
+### ✅ Phase 2 = Monorepo Migration
+
+**Adds:**
+
+- shared types
+- analyzer version matrices
+- rulepack modularization
+- sentinel
+- dashboard
+- shadow analyzer infrastructure
+
+This two-phase structure is locked.
 
 ---
 
-# 🟩 SECTION 3 — WHY MONOREPO (PHASE 2)
+# 🟦 SECTION 2 — WHY SEPARATE PACKAGES (Phase 1)
 
-Phase 2 introduces:
+Phase 1 must produce:
 
-🔥 Rulepack modularization  
-🔥 Safety Sentinel  
-🔥 Shadow-mode analyzer versions  
-🔥 Schema upgrades (v1 → v2 → v3)  
-🔥 SaaS Dashboard  
+- a deterministic, pure analyzer
+- a minimal runtime
+- a golden-test-verified CLI
+
+Separate packages guarantee:
+
+- zero cross-dependencies
+- zero type drift
+- no accidental impurity
+- deterministic golden tests
+- easy migration to monorepo
+
+This is the only correct architecture for Phase 1.
+
+---
+
+# 🟩 SECTION 3 — WHY MONOREPO (Phase 2)
+
+Phase 2 introduces features that cannot be built safely without a monorepo:
+
+🔥 Shared types/schemas  
+🔥 Multi-engine shadow builds  
+🔥 Stable rulepack versioning  
+🔥 Schema adapters  
+🔥 Shared golden fixtures  
 🔥 Drift detection  
-🔥 Telemetry aggregation  
-🔥 Enterprise rulesets  
+🔥 Sentinel  
+🔥 Dashboard  
+🔥 Enterprise rulepacks  
 
-These require:
+**Additional constraints:**
 
-1. Shared types across packages  
-2. Shared golden fixtures  
-3. Multiple versions of the engine loaded side-by-side  
-4. Unified builds  
-5. Unified testing  
-6. Shared schema definitions  
-7. Shared envelope formats  
+1. **Multi-engine builds require workspace tooling**
 
-Therefore, Phase 2 requires a monorepo.
+   Shadow analyzers must import shared types from a single canonical location.
+
+2. **Drift detection requires a stable baseline**
+
+   Migration cannot occur until zero drift across all golden repos.
+
+3. **Schema evolution must be centralized**
+
+   Adapters and rules must be co-located.
+
+4. **Sentinel must load multiple engine versions**
+
+   Impossible with separate package folders.
+
+Thus, Phase 2 requires a monorepo.
 
 ---
 
-# 🟧 SECTION 4 — PHASE 1 FOLDER SCAFFOLD (Code Structure)
+# 🟧 SECTION 4 — PHASE 1 PACKAGE STRUCTURE
 
-This section defines **where every line of code goes in Phase 1**.
-
-## 📁 arcsight-wedge  
-
-**THE ENGINE — pure, deterministic, GitHub-agnostic**
+**Authoritative structure (from [Phase 1 Folder Scaffold](./02-phase1-folder-scaffold.md)):**
 
 ```
-src/
-  index.ts
-
-  types/
-  canonicalization/
-  snapshot/
-  graph/
-  rulepacks/
-  invariants/
-  envelopes/
-  versions/
-  adapters/
-  sandbox/
-  degraded/
-  fingerprint/
-  utils/
-
-tests/
-  unit/
-  integration/
-  golden/
-    repos/
-    expected/
-    fixtures/
+/arcsight-wedge      ← deterministic engine
+/arcsight-cli        ← developer tooling + golden tests
+/arcsight-github-app ← runtime orchestrator
 ```
 
-Engine Rules:
+**Rules:**
 
-✔ Deterministic  
-✔ Pure functions only  
-✔ No network  
-✔ No environment variables  
-✔ No timestamps/randomness  
-✔ No GitHub objects  
-✔ Reads NOTHING from disk when analyzing  
+- no shared types
+- no shared utils
+- only CLI/runtime may import engine's public API
+- snapshot builder temporarily lives in engine (must migrate to runtime in Phase 2)
 
-RepoSnapshot is the ONLY input.  
-Envelope is the ONLY output.
+Engine remains pure.  
+Runtime remains a host.  
+CLI remains a consumer.
 
 ---
 
-## 📁 arcsight-cli  
+# 🟣 SECTION 5 — PHASE 1 IMPLEMENTATION ORDER
 
-**Developer Tool — golden tests, diffing, replay**
+**This order is binding. Changing it introduces nondeterminism or invalid baselines.**
 
-```
-src/
-  commands/
-  utils/
-  index.ts
+## STEP 1 — Build the Deterministic Engine (arcsight-wedge)
 
-fixtures/
-tests/
-```
+The engine MUST reach:
 
-CLI Rules:
+✔ determinism  
+✔ purity  
+✔ zero nondeterministic behavior  
+✔ zero drift across golden repos  
 
-✔ May read filesystem  
-✔ May consume engine  
-✔ Must not import runtime  
-✔ Golden tests live here and engine must satisfy them  
+before Phase 2.
+
+**Build subsystems in this order:**
+
+### 1️⃣ Canonicalization Subsystem
+
+Implement:
+
+- path normalization
+- newline normalization
+- deterministic file ordering
+- canonical hashing
+- `canonicalRepoSnapshot`
+
+Canonicalization must be:
+
+- pure
+- stable
+- locale-invariant
+- encoding-invariant
+- environment-invariant
+
+Locale-dependent logic (e.g., Turkish lowercase) is forbidden.
+
+### 2️⃣ RepoSnapshot Format + Temporary Snapshot Builder
+
+Snapshot builder lives temporarily inside the engine.
+
+Snapshot must:
+
+- be a pure structural view
+- depend only on archive contents
+- never depend on PR metadata, commit messages, timestamps, or runtime context
+- be deterministic across machines
+
+**Phase-2 rule**
+
+Snapshot builder must migrate out of the engine into `arc-runtime`.
+
+### 3️⃣ Graph Builder
+
+Implement:
+
+- `buildGraph`
+- `graphStats`
+
+Graph must be deterministic, stable, and free of internal heuristics.
+
+### 4️⃣ Cycle Detection (Builtin Core Rulepack)
+
+Implement:
+
+- `detectCycles`
+- `cycleClassifier`
+
+Classification must be deterministic, pure, and ordering-invariant.
+
+### 🔥 Phase-1 Rulepack Clarification (New)
+
+**Phase 1 includes ONLY built-in core rulepacks.**  
+External or enterprise rulepacks are forbidden until Phase 2.
+
+This enforces purity, reproducibility, and stable `analyzerVersion` behavior.
+
+### 5️⃣ Invariants
+
+Implement:
+
+- `validateGraph`
+- `validateEnvelope`
+
+If invariants fail → deterministic error envelope.
+
+### 6️⃣ Envelope Builder
+
+Implement:
+
+- `buildCoreEnvelope`
+- `attachExtensions`
+- `signEnvelope`
+
+Envelope must be identical for identical RepoSnapshots.
+
+### 7️⃣ Degraded Mode
+
+Two deterministic degradation classes:
+
+- `degradeForLimits`
+- `degradeForComplexity`
+
+Limit enforcement must be deterministic and prefix-based.
+
+### 8️⃣ Schema Adapters
+
+Implement:
+
+- v1 → v2 forward adapter
+
+Adapters must:
+
+- maintain backwards compatibility
+- never drop fields
+- preserve `identityChain`
+- be reversible for testing
+
+### 9️⃣ Fingerprinting
+
+Implement `repoFingerprint` using:
+
+- canonical ordering
+- stable hashing
+- pure structural signature
+
+Fingerprints must be identical across machines, OSes, and locales.
+
+### 🔟 Golden Tests (Engine)
+
+Golden repos:
+
+- small
+- medium
+- weird
+
+Outputs must be:
+
+- byte-for-byte stable
+- stable across machines
+- stable across environments
+
+### 🔥 New Refinement: Cycle-Complete Before Golden Tests
+
+**Before generating golden tests:**
+
+Engine MUST reach cycle-complete deterministic behavior.  
+Golden baselines MUST NOT be captured while cycle logic is still changing.
+
+This aligns with [Golden Test Governance](./09-golden-test-governance.md) and prevents locking in incorrect baselines.
+
+**Required for Phase-2 migration:**
+
+✔ zero drift across all golden repos  
+✔ `analyzerVersion` frozen
 
 ---
 
-## 📁 arcsight-github-app  
+## STEP 2 — Implement arcsight-cli
 
-**Runtime Orchestrator — the GitHub App**
+CLI provides:
 
-```
-src/
-  server.ts
+- local analysis
+- golden comparison
+- fixture replay
+- envelope inspection
 
-  webhook/
-  github/
-  analysis/
-  dlq/
-  rateLimit/
-  logs/
-  telemetry/
-  identity/
-  config/
-  runbooks/
+**Commands:**
 
-tests/
-```
+- `analyze <path>`
+- `compare --golden`
+- `replay <fixture>`
+- `dump-envelope`
 
-Runtime Rules:
+**CLI uses:**
 
-✔ Only orchestrates  
-✔ Never performs graph logic  
-✔ Never mutates envelopes  
-✔ Uses engine as a black-box  
+- engine's snapshot builder (Phase 1 only)
+- engine's `analyze()`
+- `stableStringify`-based inspect tooling
+
+CLI golden tests ensure full determinism.
 
 ---
 
-# 🟣 SECTION 5 — PHASE 1 IMPLEMENTATION ORDER  
+## STEP 3 — Implement arcsight-github-app (Runtime)
 
-### **Do not change this order. This prevents chaos and nondeterminism.**
+**Runtime responsibilities:**
 
----
+- Webhook server
+- Event dedupe
+- SHA guard
+- PR-level mutex
+- Token manager
+- Tarball fetcher
+- Tarball → RepoSnapshot
+- `analyze(snapshot)`
+- CheckRun publishing
+- DLQ
+- Rate-limit coordinator
+- Telemetry + logging
 
-## STEP 1 — Implement arc-engine (wedge)  
+**Runtime must:**
 
-### **The engine must be 100% complete and stable before anything else.**
+- never perform graph logic
+- never run rulepacks
+- never mutate envelopes
+- never apply schema adapters
 
-Build in this order:
-
-1️⃣ Canonicalization  
-- normalizePaths  
-- normalizeNewlines  
-- deterministic ordering  
-- canonicalRepoSnapshot  
-- canonical hashing  
-
-2️⃣ RepoSnapshot Format & SnapshotBuilder  
-- snapshot is a pure representation  
-- no runtime or environment behavior  
-
-3️⃣ Graph Builder  
-- buildGraph  
-- graphStats  
-
-4️⃣ Cycle Detector  
-- detectCycles  
-- cycle classification  
-
-5️⃣ Invariants  
-- validateGraph  
-- validateEnvelope  
-
-6️⃣ Envelope Builder  
-- buildCoreEnvelope  
-- attachExtensions  
-- signEnvelope  
-
-7️⃣ Degraded Mode  
-- degradeForLimits  
-- degradeForComplexity  
-
-8️⃣ Schema Adapters  
-- v1 → v2 migration logic  
-
-9️⃣ Fingerprint  
-- repoFingerprint  
-
-🔟 Golden Repos + Golden Tests  
-- small  
-- medium  
-- weird  
-
-Engine must produce stable, byte-for-byte golden envelopes.
-
-💯 Hard-code analyzerVersion & schemaVersion  
-
-These anchor the lifecycle.
-
----
-
-## STEP 2 — Implement arc-cli  
-
-Commands:
-
-- `arcsight analyze ./repo`  
-- `arcsight compare --golden`  
-- `arcsight replay <fixture>`  
-- `arcsight dump-envelope <sha>`  
-
-CLI must use:
-
-✔ snapshot builder from engine  
-✔ analyze() from engine  
-✔ projectEnvelope() for pretty printing  
-
----
-
-## STEP 3 — Implement arc-runtime (GitHub App)
-
-1️⃣ Webhook server  
-2️⃣ Dedupe  
-3️⃣ SHA guard  
-4️⃣ PR-level mutex  
-5️⃣ Token manager  
-6️⃣ Tarball fetcher  
-7️⃣ Tarball → RepoSnapshot  
-8️⃣ analyze(snapshot)  
-9️⃣ CheckRun publisher  
-🔟 DLQ (dead-letter queue)  
-1️⃣1️⃣ Rate-limit coordinator  
-1️⃣2️⃣ Logging + telemetry  
-
-At this point:
-
-PR → ArcSight → CheckRun works end-to-end.
+Runtime treats the engine as a pure black box.
 
 ---
 
 # 🟩 SECTION 6 — PHASE 2 MONOREPO MIGRATION
 
-The future monorepo structure:
+**Final monorepo structure:**
 
 ```
 arcsight/
@@ -311,77 +366,93 @@ arcsight/
     arc-runtime
     arc-cli
     arc-shared
-    arc-dashboard
     arc-sentinel
+    arc-dashboard
 ```
 
-Move each existing folder into `/packages/**`.
+**Migration requirements:**
 
-Monorepo adds:
+**MUST be true before migration:**
 
-- shared types  
-- unified builds  
-- shared golden tests  
-- sentinel  
-- dashboard  
-- shadow analyzers  
+✔ engine golden tests are stable  
+✔ zero drift across golden repos  
+✔ `analyzerVersion` frozen  
+✔ snapshot builder ready to move into `arc-runtime`  
+✔ deterministic config contract enforced  
+✔ `repoFingerprint` stable  
+✔ no external rulepacks yet  
 
-Migration takes **2–3 hours**.  
-Zero rewrite.
+Migration cost: 2–3 hours, zero rewrites.
 
 ---
 
-# 🟥 SECTION 7 — FUTURE: SHADOW ANALYZER PIPELINE (Phase 2)
+# 🟥 SECTION 7 — SHADOW ANALYZER PIPELINE (Phase 2)
 
-After engine v1.0.0 is stable:
+Shadow engines enable safe evolution:
 
 ```
-/arc-engine/dist/v1.0.0        ← live
-/arc-engine/dist/v1.1.0-shadow ← experimental
+arc-engine/dist/v1.0.0        ← live
+arc-engine/dist/v1.1.0-shadow ← shadow
+arc-engine/dist/v1.2.0-shadow ← next shadow
 ```
 
-Runtime loads both:
+Runtime invokes:
 
-- runs both engines  
-- compares envelopes  
-- reports deltas  
-- only publishes stable version  
-- sentinel monitors drift  
+- live engine
+- all shadow engines
 
-This is how Google, Stripe, and Meta roll out static analysis.
+Sentinel compares:
+
+- envelopes
+- drift regions
+- invariants
+- fingerprints
+- rulepack outputs
+
+If drift is unacceptable → shadow engine not promoted.
+
+This is the same technique used by Google Tricorder, Meta Infer, and Stripe Sorbet.
 
 ---
 
 # 🟨 SECTION 8 — SCHEMA LIFECYCLE
 
-Schema v1 is stable in Phase 1.
+Phase-1 `schemaVersion` = v1 (frozen).
 
-Future schema versions require:
+**Schema evolution rules:**
 
-- backwards-compatible adapters  
-- envelope invariants  
-- extension-only evolution  
-- stable identity chain  
-- stable analyzerVersion  
+- adapters required for all future versions
+- never breaking
+- preserve `identityChain`
+- preserve core envelope structure
+- rulepacks must consume upgraded schema deterministically
+
+Schema adapters guarantee backwards compatibility indefinitely.
 
 ---
 
-# 🟦 SECTION 9 — ENTERPRISE ROADMAP (Phase 2+)
+# 🟦 SECTION 9 — ENTERPRISE & PHASE 3 ROADMAP
 
-Later additions include:
+Post-Phase-2 features:
 
-- Dashboard  
-- Org-level insights  
-- Hotspot analysis  
-- Drift detection  
-- Slack notifications  
-- Long-term archival  
-- Enterprise rulepacks  
-- Boundary rules  
-- Forbidden imports  
-- Tiered limits  
+- Dashboard
+- Org-level insights
+- Hotspot analysis
+- Historical drift timelines
+- Rulepack marketplace
+- Enterprise namespaces
+- Tiered limits
+- Slack/Teams notifications
+- Long-term archival
+- Multi-repo correlation
+- Boundary rules
+- Forbidden imports checks
 
-All follow the same envelope/telemetry foundation.
+All of these rely on:
+
+- stable envelopes
+- drift-safe schema evolution
+- deterministic engine behavior
 
 ---
 
@@ -389,22 +460,28 @@ All follow the same envelope/telemetry foundation.
 
 This roadmap defines:
 
-- **Exactly what to build**
-- **Exactly when to build it**
-- **Exact order**
-- **Exact invariants**
-- **Exact purity rules**
-- **Exact folder boundaries**
-- **Exact migration plan**
-- **Exact future evolution path**
+- What to build
+- In what order
+- With what invariants
+- Under what deterministic rules
+- How to migrate to a monorepo
+- How to introduce shadow analyzers safely
+- How schema and rulepacks evolve
+- How ArcSight scales to enterprise-grade static analysis
 
-This is the complete execution architecture for ArcSight.
+This is the authoritative execution document for ArcSight.
 
 ---
 
 ## References
 
 - [Strategic Architecture](./01-decision-phase1-vs-phase2.md)
-- [Physical Architecture](./02-phase1-folder-scaffold.md)
-- [Monorepo Migration](./05-monorepo-migration.md)
-- [Dependency Contract](./06-dependency-contract.md)
+- [Phase 1 Folder Scaffold](./02-phase1-folder-scaffold.md)
+- [Monorepo Migration](./5B-monorepo-migration.md)
+- [Dependency Contract](./5A-dependency-contract.md)
+- [Determinism Contract](./07-determinism-contract.md)
+- [Golden Test Governance](./09-golden-test-governance.md)
+- [Rulepack Versioning Contract](./12-rulepack-versioning-contract.md)
+- [RepoSnapshot Contract](./14-repo-snapshot-contract.md)
+- [Drift Detection Contract](./19-drift-detection-contract.md)
+- [Deterministic Config Contract](./20-deterministic-config-contract.md)

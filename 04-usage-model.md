@@ -1,277 +1,259 @@
-# ArcSight — Layered Usage Model  
+# ArcSight Documentation Usage Model
 
-### How Documents 1, 2, and 3 Work Together
+## How to Navigate, Interpret, and Apply the Architecture Documents
 
-ArcSight has three primary architecture documents:
-
-1. **Document 1 — Strategic Architecture (Decision Layer)**  
-2. **Document 2 — Physical Architecture (Folder Scaffold)**  
-3. **Document 3 — Operational Architecture (System Roadmap — CTO Sign-Off)**  
-
-This document explains how they relate, which one is authoritative in each phase, and how to navigate the architecture without confusion.
-
-It introduces the "four-layer model" used by real-world engineering orgs (Stripe, Google Tricorder, Meta Infer, Snyk).
+**FINAL VERSION — Phase 1 & Phase 2 Compliant**
 
 ---
 
-# 🎯 PURPOSE OF THIS DOCUMENT
+## 1. Purpose
 
-To answer:
+This document defines how ArcSight's documentation is structured, which document is authoritative in each context, and how engineers must use the documentation across Phases 1 and 2.
 
-- "Which document is the source of truth right now?"  
-- "What should I follow when coding?"  
-- "When should we read which document?"  
-- "How do these documents relate?"  
-- "How do we avoid contradictions or ambiguity?"  
+This is the "meta-layer" that prevents:
 
-This is the **meta-level guide**, not a design doc.
+- ambiguity
+- conflicting interpretations
+- accidental reference to outdated documents
+- architectural drift
+- incorrect implementation order
+- incorrect dependency assumptions
+
+It explains how Documents 01 → 20 relate to each other and when each one governs decisions.
 
 ---
 
-# 🧠 THE FOUR-LAYER MODEL
+## 2. Scope
 
-ArcSight's documentation hierarchy looks like this:
+This document describes:
+
+✔ The four-layer architecture documentation stack  
+✔ Which document to follow during development  
+✔ How to interpret contracts vs policies vs roadmaps  
+✔ How documents evolve across Phase 1 → Phase 2  
+✔ Enforcement rules for dependencies, determinism, schema, and config  
+
+**Not included:**
+
+✘ API design details  
+✘ Schema evolution specifics ([Schema Evolution Contract](./11-schema-evolution-contract.md))  
+✘ Drift detection internals ([Drift Detection Contract](./19-drift-detection-contract.md))  
+✘ Analyzer promotion rules ([Analyzer Promotion Policy](./17-analyzer-promotion-policy.md))  
+
+---
+
+## 3. Definitions & Terms
+
+**Strategic Layer**  
+Long-term, slow-changing architectural decisions (Docs 01, 05).
+
+**Physical Layer**  
+Directory structure & dependency boundaries (Doc 02).
+
+**Operational Layer**  
+Executable system plan and build-order (Doc 03).
+
+**Contract Layer**  
+Formal behavioral rules governing determinism, drift, schema, runtime, config, limits, promotion, and extensions (Docs 06–20).
+
+**Authoritative Document**  
+The document that overrides all others within its domain.
+
+---
+
+## 4. The Four-Layer Documentation Model
+
+ArcSight documentation is structured as:
 
 ```
-┌──────────────────────────────────┐
-│ Document 3 — System Roadmap      │
-│ (Operational Architecture)      │
-│ — What to build & in what order │
-└──────────────────────────────────┘
-▲
-│
-┌──────────────────────────────────┐
-│ Document 2 — Folder Scaffold     │
-│ (Physical Architecture)          │
-│ — Where code lives & boundaries │
-└──────────────────────────────────┘
-▲
-│
-┌──────────────────────────────────┐
-│ Document 1 — Decision Layer      │
-│ (Strategic Architecture)         │
-│ — When to stay separate vs mono │
-└──────────────────────────────────┘
-▲
-│
-┌──────────────────────────────────┐
-│ Document 4 — Usage Model         │
-│ (Meta Architecture)              │
-│ — How to use the documents       │
-└──────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│  Layer 4 — Meta Layer (Doc 04)                         │
+│  How to use the documentation                          │
+└────────────────────────────────────────────────────────┘
+                ▲
+┌────────────────────────────────────────────────────────┐
+│  Layer 1 — Strategic Architecture (Docs 01 & 05)       │
+│  Long-term, high-level decisions                       │
+└────────────────────────────────────────────────────────┘
+                ▲
+┌────────────────────────────────────────────────────────┐
+│  Layer 2 — Physical Architecture (Doc 02)               │
+│  Folder layout, package boundaries, allowed imports    │
+└────────────────────────────────────────────────────────┘
+                ▲
+┌────────────────────────────────────────────────────────┐
+│  Layer 3 — Operational Architecture (Doc 03)            │
+│  What to build, in what order, with which invariants   │
+└────────────────────────────────────────────────────────┘
+                ▲
+┌────────────────────────────────────────────────────────┐
+│  Layer 5 — Contract Layer (Docs 06–20)                 │
+│  Deterministic rules governing engine, runtime, etc.    │
+└────────────────────────────────────────────────────────┘
 ```
 
-Each layer zooms into the next.
+Each layer narrows the scope and increases precision.
 
-- Document 1 = **When**  
-- Document 2 = **Where**  
-- Document 3 = **What + How**  
-
-This document = **How to use all three correctly**.
+They never conflict because each layer governs a different dimension.
 
 ---
 
-# 📄 DOCUMENT 1 — Strategic Architecture (Decision Layer)
+## 5. Authority Hierarchy (Which Doc Wins?)
 
-### Summary  
-"Stay separate in Phase 1. Migrate to monorepo in Phase 2."
+This is the most important section.
 
-### Purpose  
-This governs **high-level structural strategy**, such as:
+If two documents appear to overlap, the following hierarchy resolves it:
 
-- When do we reorganize code?
-- Why not use a monorepo now?
-- When will the monorepo be required?
-- What conditions must be met before migration?
+### 1️⃣ Contract Layer (Docs 06–20)
 
-### You use it for:
+**Always wins.**
 
-- Planning  
-- Onboarding  
-- Architecture discussions  
-- Long-term decisions  
+Contracts define deterministic, enforceable rules.
 
-### You do NOT use it for:
+**Examples:**
 
-- Deciding where files go  
-- Coding  
-- Day-to-day engineering  
+- drift classification is defined in [Drift Detection Contract](./19-drift-detection-contract.md)
+- schema rules in [Schema Evolution Contract](./11-schema-evolution-contract.md)
+- promotion rules in [Analyzer Promotion Policy](./17-analyzer-promotion-policy.md)
+- config rules in [Deterministic Config Contract](./20-deterministic-config-contract.md)
+- extension namespacing in [Enterprise Extension Namespaces](./18-enterprise-extension-namespaces.md)
+- limits in [Limits & Sandbox Policy](./13-limits-and-sandbox-policy.md)
 
-This is **strategic**, not operational.
+Contracts override everything.
 
----
+### 2️⃣ Operational Roadmap (Doc 03)
 
-# 📄 DOCUMENT 2 — Physical Architecture (Folder Scaffold)
+Defines what to build, in what order, and how the system operates.
 
-### Summary  
-Defines the folder trees for:
+If a contract does not specify ordering or build sequence, [Full System Roadmap](./03-full-system-roadmap.md) does.
 
-- arcsight-wedge  
-- arcsight-cli  
-- arcsight-github-app  
+### 3️⃣ Physical Architecture (Doc 02)
 
-### Purpose  
-This is the **developer-facing blueprint**.
+Defines folder structure and boundaries.
 
-It tells you:
+If a contract describes behavior but not where it belongs, [Phase 1 Folder Scaffold](./02-phase1-folder-scaffold.md) wins.
 
-- Where every module belongs  
-- Allowed imports  
-- Forbidden imports  
-- Responsibility boundaries  
-- What code lives in which package  
+### 4️⃣ Strategic Architecture (Docs 01 & 05)
 
-### You use it for:
+Governs:
 
-- Writing code  
-- PR reviews  
-- Creating new modules  
-- Enforcing boundaries  
-- Checking purity and determinism rules  
+- Phase-1 vs Phase-2 structure
+- Monorepo migration window
+- High-level package rules
 
-### You do NOT use it for:
+If a lower-level doc tries to contradict a strategic decision (rare), strategic wins.
 
-- Build sequencing  
-- Versioning  
-- Schema evolution  
-- Runtime orchestration  
+### 5️⃣ This Document (Doc 04)
 
-Document 2 is the **physical architecture**.
+Never overrides anything.
+
+Its job is to explain how to interpret the other documents.
 
 ---
 
-# 📄 DOCUMENT 3 — Operational Architecture (Full System Roadmap)
+## 6. Correct Usage During Phase 1 (Now)
 
-### Summary  
-This is the **complete build plan** for Phase 1 and early Phase 2.
+During Phase 1, developers MUST:
 
-It defines:
+✔ Follow [Full System Roadmap](./03-full-system-roadmap.md) (Operational Roadmap) for implementation order  
+✔ Follow [Phase 1 Folder Scaffold](./02-phase1-folder-scaffold.md) (Physical Architecture) for file placement + boundaries  
+✔ Follow Docs 06–20 for behavior and determinism  
+⚠️ NOT use monorepo rules yet  
 
-- Build order  
-- Canonicalization  
-- Determinism constraints  
-- Snapshot → envelope pipeline  
-- Graph construction  
-- Invariants  
-- Degraded mode  
-- Schema versioning  
-- Golden tests  
-- Runtime orchestration  
-- DLQ & retry logic  
-- Phase 2 monorepo migration  
-- Shadow analyzers  
-- Enterprise roadmap  
+Do not read Docs 01 or 05 when writing code (unless planning migration).
 
-### You use it for:
+**Phase-1 Authority Model:**
 
-- Implementing features  
-- Planning sprints  
-- Ensuring correctness  
-- Avoiding architectural drift  
-- Reviewing complex PRs  
-- Coordinating CLI + engine + runtime behavior  
-
-### You **do not** use it for:
-
-- Deciding folder structure (Document 2)  
-- Deciding when to migrate repos (Document 1)  
-
-Document 3 is the **operational heart of ArcSight**.
+```
+Contracts → Doc 03 → Doc 02 → Doc 01 → Doc 04
+```
 
 ---
 
-# 🔥 WHICH DOCUMENT IS THE SOURCE OF TRUTH DURING IMPLEMENTATION?
+## 7. Correct Usage During Phase 2
 
-### During Phase 1 (now):
+Once the monorepo exists and sentinel is active, the authority model changes:
 
-**Primary (authoritative):**  
-➡️ **Document 3 — Full System Roadmap**  
-"Build exactly this, in exactly this order."
+```
+Contracts → Sentinel & Promotion (16,17) → Doc 03 → Doc 02 → Doc 01 → Doc 04
+```
 
-**Secondary:**  
-➡️ Document 2 — Folder Scaffold  
-"Place code here. Follow these rules."
+**New dominant documents:**
 
-**Reference only:**  
-➡️ Document 1 — Strategic  
-"When do we migrate to monorepo?"
+- [Sentinel Shadow Analysis Contract](./16-sentinel-shadow-analysis-contract.md) (Doc 16)
+- [Analyzer Promotion Policy](./17-analyzer-promotion-policy.md) (Doc 17)
 
----
-
-# 🔥 WHICH DOCUMENT DOES NEW ENGINEERS READ FIRST?
-
-1️⃣ Document 4 — Usage Model  
-2️⃣ Document 1 — Strategic  
-3️⃣ Document 2 — Structure  
-4️⃣ Document 3 — Roadmap  
-
-This gives them:
-
-- orientation  
-- understanding of the system's philosophy  
-- where code goes  
-- how the system works end to end  
+These now govern analyzer lifecycle decisions.
 
 ---
 
-# 🔥 WHEN DO YOU RETURN TO EACH DOCUMENT?
+## 8. How to Read the Documentation (Per Role)
 
-### Every time you write code → Document 2 + Document 3  
+### Engine Developers
 
-### Every time you plan a sprint → Document 3  
+Read in this order:
 
-### Every time you question folder structure → Document 2  
+1. [Phase 1 Folder Scaffold](./02-phase1-folder-scaffold.md) — folder boundaries
+2. [Full System Roadmap](./03-full-system-roadmap.md) — build order
+3. [Invariants Contract](./06-invariants-contract.md), [Determinism Contract](./07-determinism-contract.md), [Schema Evolution & Adapters](./08-schema-evolution-and-adapters.md), [Schema Evolution Contract](./11-schema-evolution-contract.md), [Limits & Sandbox Policy](./13-limits-and-sandbox-policy.md), [Envelope Format Spec](./15-envelope-format-spec.md) — engine core behavior
+4. [Analyzer Promotion Policy](./17-analyzer-promotion-policy.md) (Phase 2) — promotion rules
+5. [Drift Detection Contract](./19-drift-detection-contract.md) — drift detection
 
-### Every time you consider monorepo → Document 1  
+### Runtime Developers
 
-### Every time a new engineer joins → Document 4  
+Read:
+
+- [Phase 1 Folder Scaffold](./02-phase1-folder-scaffold.md)
+- [Full System Roadmap](./03-full-system-roadmap.md)
+- [Runtime ↔ Engine Contract](./10-runtime-and-engine-contract.md)
+- [RepoSnapshot Contract](./14-repo-snapshot-contract.md)
+- [Deterministic Config Contract](./20-deterministic-config-contract.md)
+
+### Sentinel Developers
+
+Read:
+
+- [Envelope Format Spec](./15-envelope-format-spec.md)
+- [Sentinel Shadow Analysis Contract](./16-sentinel-shadow-analysis-contract.md)
+- [Analyzer Promotion Policy](./17-analyzer-promotion-policy.md)
+- [Drift Detection Contract](./19-drift-detection-contract.md)
+
+### Enterprise Rulepack Authors
+
+Read:
+
+- [Rulepack Versioning Contract](./12-rulepack-versioning-contract.md)
+- [Enterprise Extension Namespaces](./18-enterprise-extension-namespaces.md)
+- [Envelope Format Spec](./15-envelope-format-spec.md)
 
 ---
 
-# 🧩 HOW THE DOCUMENTS AVOID CONTRADICTION
+## 9. How Documents Evolve Over Time
 
-Because they sit on different levels:
+### Phase 1:
 
-- Document 1 = "WHEN do we restructure?"  
-- Document 2 = "WHERE does the code live?"  
-- Document 3 = "WHAT should be implemented and HOW?"  
-- Document 4 = "HOW should we use the documents?"  
+- Docs 01–05 are mostly static
+- Docs 06–15 evolve as engine stabilizes
+- Docs 16–20 remain unused but frozen for Phase 2
 
-There is **no overlap**, therefore no conflict.
+### Phase 2:
 
----
-
-# 🎯 FINAL GUIDANCE FOR DAILY WORKFLOW
-
-### Every morning during Phase 1:
-
-1. Open **Document 3** → choose next subsystem  
-2. Open **Document 2** → place files in correct location  
-3. Ignore Document 1 completely during coding  
-4. Use Document 4 if confused about which doc to consult  
-
-### This keeps execution clean and prevents architectural drift.
+- Docs 01 and 02 are locked
+- Docs 03, 11, 12, 15, 16, 17, 18, 19, 20 evolve
+- New contracts rarely added
 
 ---
 
-# 🏁 SUMMARY
+## 10. Change Log (Append-Only)
 
-Document 4 completes your architecture set by defining:
-
-- How to read the docs  
-- When to use each  
-- Which is authoritative now  
-- How the layers fit together  
-- How to onboard new engineers  
-- How to avoid decision fatigue  
-
-You now have a full, FAANG-grade documentation hierarchy.
+**v1.0.0** — Full rewrite for Phase-1 + Phase-2 architecture. Defines authority hierarchy, role-based reading model, documentation layers, and evolution rules.
 
 ---
 
 ## References
 
 - [Strategic Architecture](./01-decision-phase1-vs-phase2.md)
-- [Physical Architecture](./02-phase1-folder-scaffold.md)
-- [Operational Architecture](./03-full-system-roadmap.md)
-
+- [Phase 1 Folder Scaffold](./02-phase1-folder-scaffold.md)
+- [Full System Roadmap](./03-full-system-roadmap.md)
+- [Monorepo Migration](./5B-monorepo-migration.md)
+- [Documentation Index & Authoring Protocol](./00-docs-index-and-authoring-protocol.md)
