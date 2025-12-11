@@ -39,6 +39,7 @@ This contract specifies:
 This contract does NOT define:
 
 - analyzer promotion lifecycle → see [Analyzer Promotion Policy](./17-analyzer-promotion-policy.md)
+- analyzer interface specification → see [Contract Layer Spec v1](./21-contract-layer-spec-v1.md#42-analyzer-interface-v1)
 - schema evolution rules → [Schema Evolution Contract](./11-schema-evolution-contract.md)
 - envelope format → [Envelope Format Spec](./15-envelope-format-spec.md)
 - rulepack versioning → [Rulepack Versioning Contract](./12-rulepack-versioning-contract.md)
@@ -143,6 +144,8 @@ Blocker drift includes:
 - nondeterministic extension output
 - namespace collisions
 - violation of enterprise namespace rules ([Enterprise Extension Namespaces](./18-enterprise-extension-namespaces.md))
+- analyzer interface violations (see [Analyzer Interface v1](./21-contract-layer-spec-v1.md#42-analyzer-interface-v1))
+- violation schema non-compliance (see [Violation Schema v1](./21-contract-layer-spec-v1.md#41-violation-schema-v1))
 
 **Determinism Drift**
 
@@ -325,6 +328,13 @@ CI MUST ensure:
 ---
 
 ## 10. Change Log (Append-Only)
+
+**v1.2.0** — Phase 1 alignment updates
+
+- Added cross-references to Contract Layer Spec v1 (Analyzer Interface, Violation Schema)
+- Added analyzer interface violations to blocker drift criteria
+- Added violation schema non-compliance to blocker drift criteria
+- Updated scope to exclude analyzer interface specification (deferred to Contract Layer Spec)
 
 **v1.1.0** — Added enhancements:
 

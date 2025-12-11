@@ -59,6 +59,8 @@ This contract applies to:
 
 - Schema evolution rules (see [Schema Evolution Contract](./11-schema-evolution-contract.md))
 - Rulepack versioning rules (see [Rulepack Versioning Contract](./12-rulepack-versioning-contract.md))
+- Analyzer Interface specification (see [Contract Layer Spec v1](./21-contract-layer-spec-v1.md))
+- Violation Schema specification (see [Contract Layer Spec v1](./21-contract-layer-spec-v1.md))
 - Drift classification semantics (see [Drift Detection Contract](./19-drift-detection-contract.md))
 - Snapshot format (see [RepoSnapshot Contract](./14-repo-snapshot-contract.md))
 - Determinism guarantees (see [Determinism Contract](./07-determinism-contract.md))
@@ -244,11 +246,11 @@ DFS/BFS starting points MUST NOT influence results.
 
 ### 4.4 Rulepack Invariants
 
-Rulepacks MUST satisfy:
+Rulepacks MUST satisfy the [Analyzer Interface v1](./21-contract-layer-spec-v1.md#42-analyzer-interface-v1) and [Rulepack Schema v1](./21-contract-layer-spec-v1.md#43-rulepack-schema-v1) from the Contract Layer Spec.
 
 #### 4.4.1 Rulepacks MUST NOT Modify Core Structures
 
-Rulepacks MAY emit extension fields but MUST NOT:
+Rulepacks MAY emit extension fields and violations (per [Violation Schema v1](./21-contract-layer-spec-v1.md#41-violation-schema-v1)) but MUST NOT:
 
 - modify RepoSnapshot
 - modify Graph
@@ -258,12 +260,14 @@ Rulepacks MAY emit extension fields but MUST NOT:
 
 #### 4.4.2 Rulepack Output MUST Be Deterministic
 
-Rulepack output MUST:
+Rulepack output MUST conform to [Analyzer Interface v1](./21-contract-layer-spec-v1.md#42-analyzer-interface-v1) and:
 
 - be stable under canonical ordering
 - contain JSON-serializable values only
 - never include timestamps unless explicitly allowed
 - never include random IDs
+- produce violations conforming to [Violation Schema v1](./21-contract-layer-spec-v1.md#41-violation-schema-v1)
+- produce extension_data that is deep-sorted
 
 Unknown fields MUST remain preserved.
 
@@ -271,7 +275,8 @@ Unknown fields MUST remain preserved.
 
 Any internal rulepack failure MUST:
 
-- surface as deterministic `rulepack_error`
+- surface as deterministic violations with `severity: "error"` (per Analyzer Interface)
+- NOT throw exceptions
 - NOT silently skip analysis
 - NOT mutate envelope
 
@@ -509,10 +514,18 @@ Golden tests MUST fail if invariants violated.
 - [Analyzer Promotion Policy](./17-analyzer-promotion-policy.md)
 - [Drift Detection Contract](./19-drift-detection-contract.md)
 - [Deterministic Config Contract](./20-deterministic-config-contract.md)
+- [Contract Layer Spec v1](./21-contract-layer-spec-v1.md)
 
 ---
 
 ## 10. Change Log (Append-Only)
+
+**v1.1.0** — Phase 1 alignment updates
+
+- Added cross-references to Contract Layer Spec v1 (Analyzer Interface, Violation Schema)
+- Updated rulepack invariants to reference Analyzer Interface v1 requirements
+- Clarified that rulepack failures must use violations with severity: "error" per Analyzer Interface
+- Updated scope to exclude Analyzer Interface and Violation Schema specifications (deferred to Contract Layer Spec)
 
 **v1.0.0** — Initial Phase-2 Release
 

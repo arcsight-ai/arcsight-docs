@@ -43,6 +43,7 @@ This document governs:
 - Snapshot definition (see [RepoSnapshot Contract](./14-repo-snapshot-contract.md))
 - Determinism rules (see [Determinism Contract](./07-determinism-contract.md))
 - Engine/runtime boundary (see [Runtime ↔ Engine Contract](./10-runtime-and-engine-contract.md))
+- PR Summary JSON format (see [Contract Layer Spec v1](./21-contract-layer-spec-v1.md#45-pr-summary-json-schema))
 
 ---
 
@@ -350,10 +351,16 @@ Error envelopes MUST be:
 - [Schema Evolution Contract](./11-schema-evolution-contract.md)
 - [Rulepack Versioning Contract](./12-rulepack-versioning-contract.md)
 - [RepoSnapshot Contract](./14-repo-snapshot-contract.md)
+- [Contract Layer Spec v1](./21-contract-layer-spec-v1.md) (PR Summary schema derives from Envelope)
 
 ---
 
 ## 10. Change Log (Append-Only)
+
+**v1.2.0** — Phase 1 alignment updates
+
+- Added cross-reference to Contract Layer Spec v1 for PR Summary schema
+- Clarified that PR Summary JSON derives from Envelope structure
 
 **v1.1.0** — Added:
 

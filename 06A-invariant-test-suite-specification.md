@@ -16,6 +16,7 @@ This document defines the formal, executable test suite required to validate all
 - [Determinism Contract](./07-determinism-contract.md)
 - [RepoSnapshot Contract](./14-repo-snapshot-contract.md)
 - [Envelope Format Spec](./15-envelope-format-spec.md)
+- [Contract Layer Spec v1](./21-contract-layer-spec-v1.md) (Analyzer Interface, Violation Schema)
 
 It ensures:
 
@@ -144,13 +145,17 @@ Golden snapshots MUST be identical across platforms and Node versions.
 
 ### 4.6 Rulepack Invariant Tests
 
-Even in Phase 1 cycle-only rulepack:
+Rulepack invariants MUST validate conformance to [Analyzer Interface v1](./21-contract-layer-spec-v1.md#42-analyzer-interface-v1) and [Violation Schema v1](./21-contract-layer-spec-v1.md#41-violation-schema-v1):
 
 | Invariant | Tests | Error Code |
 |-----------|-------|------------|
+| Analyzer Interface compliance | unit | `RULEPACK_INTERFACE_VIOLATION` |
+| Violation schema compliance | unit | `RULEPACK_VIOLATION_SCHEMA_VIOLATION` |
 | deterministic output | golden | `RULEPACK_DETERMINISM_DRIFT` |
 | schema-safe extensions | unit | `RULEPACK_SCHEMA_VIOLATION` |
 | no forbidden imports | CI | `RULEPACK_IMPORT_FORBIDDEN` |
+| pure function (no side effects) | unit | `RULEPACK_IMPURITY_DETECTED` |
+| error handling (no throws) | unit | `RULEPACK_ERROR_HANDLING_VIOLATION` |
 
 ### 4.7 Determinism Invariant Tests
 
@@ -305,10 +310,18 @@ Every invariant MUST:
 - [Analyzer Promotion Policy](./17-analyzer-promotion-policy.md)
 - [Drift Detection Contract](./19-drift-detection-contract.md)
 - [Deterministic Config Contract](./20-deterministic-config-contract.md)
+- [Contract Layer Spec v1](./21-contract-layer-spec-v1.md)
 
 ---
 
 ## 10. Change Log (Append-Only)
+
+**v1.2.0** — Phase 1 alignment updates
+
+- Added cross-references to Contract Layer Spec v1
+- Enhanced rulepack invariant tests to validate Analyzer Interface v1 compliance
+- Added tests for Violation Schema v1 compliance
+- Added tests for analyzer purity (no side effects) and error handling (no throws)
 
 **v1.1.0** — Added:
 

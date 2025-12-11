@@ -54,7 +54,7 @@ This contract governs:
 ## 3. Definitions & Terms
 
 **AnalyzerConfig**  
-User-facing configuration model provided to the engine. Immutable and deterministic after normalization.
+User-facing configuration model provided to the engine. Immutable and deterministic after normalization. Conforms to [Analyzer Interface v1](./21-contract-layer-spec-v1.md#42-analyzer-interface-v1) `AnalyzerConfig` structure used by rulepack analyzers.
 
 **NormalizedConfig**  
 The fully resolved, canonical, deterministic configuration shape after merging defaults and applying validation.
@@ -319,10 +319,16 @@ Explicit checks for locale-dependent behavior.
 - [Envelope Format Spec](./15-envelope-format-spec.md)
 - [Sentinel Shadow Analysis Contract](./16-sentinel-shadow-analysis-contract.md)
 - [Analyzer Promotion Policy](./17-analyzer-promotion-policy.md)
+- [Contract Layer Spec v1](./21-contract-layer-spec-v1.md) (AnalyzerConfig structure)
 
 ---
 
 ## 10. Change Log (Append-Only)
+
+**v1.2.0** — Phase 1 alignment updates
+
+- Added cross-reference to Contract Layer Spec v1 for AnalyzerConfig structure
+- Clarified that AnalyzerConfig conforms to Analyzer Interface v1 config structure
 
 **v1.1.0** — Added:
 
