@@ -82,6 +82,9 @@ This index classifies all Tier B contract documents (per [Documentation Index](.
 - **[23 — Phase 1 Implementation Plan](./23-phase1-implementation-plan.md)**  
   Defines milestone-level implementation plan with build order, dependencies, test harness requirements, freeze criteria, wedge versioning strategy, and acceptance conditions.
 
+- **[21A — Phase 1 Core Contract Layer](./21A-phase1-core-contract-layer.md)**  
+  Documents the TypeScript implementation of the Phase 1 core contract layer in `src/core/`. Defines folder structure, type definitions, canonicalization helpers, and boundary rules between contract layer and runtime types.
+
 ---
 
 ## 4. Phase 2+ Contracts (Preserved, Not Yet Implemented)
@@ -138,7 +141,8 @@ Phase 1 Validation:
 └── 19-drift-detection-contract.md
 
 Phase 1 Specifications (MUST be finalized before implementation):
-├── 21-contract-layer-spec-v1.md (data schemas)
+├── 21-contract-layer-spec-v1.md (abstract data schemas)
+├── 21A-phase1-core-contract-layer.md (TypeScript implementation)
 ├── 22-wedge-architecture-spec-v1.md (engine architecture)
 └── 23-phase1-implementation-plan.md (implementation roadmap)
 ```
@@ -170,6 +174,7 @@ Phase 2 Features (blocked until Phase 1 complete):
 - [ ] [19-drift-detection-contract.md](./19-drift-detection-contract.md)
 - [ ] [20-deterministic-config-contract.md](./20-deterministic-config-contract.md)
 - [ ] [21-contract-layer-spec-v1.md](./21-contract-layer-spec-v1.md)
+- [ ] [21A-phase1-core-contract-layer.md](./21A-phase1-core-contract-layer.md)
 - [ ] [22-wedge-architecture-spec-v1.md](./22-wedge-architecture-spec-v1.md)
 - [ ] [23-phase1-implementation-plan.md](./23-phase1-implementation-plan.md)
 
@@ -192,6 +197,10 @@ Phase 2 Features (blocked until Phase 1 complete):
 ---
 
 ## 9. Change Log (Append-Only)
+
+**v1.2.0** — Added Phase 1 core contract layer implementation spec
+- Added 21A-phase1-core-contract-layer.md to Phase 1 required contracts
+- Updated dependency map to include core contract layer implementation
 
 **v1.1.0** — Added Phase 1 specification contracts
 - Added 21-contract-layer-spec-v1.md to Phase 1 required contracts
