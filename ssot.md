@@ -54,7 +54,7 @@ This file.
 
 ### 7. **Architectural Decision Records (New)**
 
-Located in `/docs/adrs/`.  
+Located in `adrs/`.  
 
 Each ADR captures binding historical precedent.  
 

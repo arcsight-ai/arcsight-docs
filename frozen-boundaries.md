@@ -189,10 +189,10 @@ Any change to frozen components **MUST** include:
 
 ## Related Documents
 
-- `docs/determinism-rules.md` — Determinism requirements
-- `docs/philosophy.md` — Design philosophy
-- `docs/phase3.1-waiver-audit.md` — Waiver system audit
-- Contract documents in `docs/module-contracts/`
+- `determinism-rules.md` — Determinism requirements
+- `philosophy.md` — Design philosophy
+- `phase3.1-waiver-audit.md` — Waiver system audit
+- Contract documents in `module-contracts/`
 
 ---
 

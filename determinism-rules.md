@@ -421,11 +421,11 @@ function buildPRFooter(): string {
 
 ## Related Documents
 
-- `docs/frozen-boundaries.md` — Frozen component boundaries
-- `docs/philosophy.md` — Design philosophy
-- `docs/phase3.1-waiver-audit.md` — Waiver system audit
+- `frozen-boundaries.md` — Frozen component boundaries
+- `philosophy.md` — Design philosophy
+- `phase3.1-waiver-audit.md` — Waiver system audit
 
-**Note:** After migration to docs-submodule, update links to reflect submodule paths (e.g., `../frozen-boundaries.md` or `docs-submodule/frozen-boundaries.md` when accessed from wedge).
+**Note:** Links within the docs-submodule use relative paths. When referencing these documents from the wedge repo, use `docs-submodule/` prefix (e.g., `docs-submodule/frozen-boundaries.md`).
 
 ---
 

@@ -111,7 +111,7 @@ Contracts define **guarantees**. Breaking contracts:
 
 **How we enforce it:**
 
-- Frozen boundaries document (`docs/frozen-boundaries.md`)
+- Frozen boundaries document (`frozen-boundaries.md`)
 - Contract validation in tests
 - Version bump requirements
 - Integration audit verifies contracts
@@ -206,9 +206,9 @@ Suppressing violations hides problems. We **annotate** violations with waiver me
 
 ### Before You Code
 
-1. **Read the contracts** (`docs/module-contracts/`)
-2. **Understand determinism** (`docs/determinism-rules.md`)
-3. **Check frozen boundaries** (`docs/frozen-boundaries.md`)
+1. **Read the contracts** (`module-contracts/`)
+2. **Understand determinism** (`determinism-rules.md`)
+3. **Check frozen boundaries** (`frozen-boundaries.md`)
 4. **Review philosophy** (this document)
 
 ### When You Code
@@ -247,10 +247,10 @@ Suppressing violations hides problems. We **annotate** violations with waiver me
 
 ## Related Documents
 
-- `docs/frozen-boundaries.md` — Frozen component boundaries
-- `docs/determinism-rules.md` — Determinism requirements
-- `docs/phase3.1-waiver-audit.md` — Waiver system audit
-- Contract documents in `docs/module-contracts/`
+- `frozen-boundaries.md` — Frozen component boundaries
+- `determinism-rules.md` — Determinism requirements
+- `phase3.1-waiver-audit.md` — Waiver system audit
+- Contract documents in `module-contracts/`
 
 ---
 
