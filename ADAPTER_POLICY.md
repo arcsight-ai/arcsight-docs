@@ -8,14 +8,14 @@
 
 ## Overview
 
-This document defines the policy for adapter repositories (e.g., `arcsight-github-app`, `arcsight-cli`) that consume the core contract layer from `@arcsight/wedge/core`.
+This document defines the policy for adapter repositories (e.g., `arcsight-github-app`, `arcsight-cli`) that consume the core contract layer from `@arcsight-ai/wedge/core`.
 
 ---
 
 ## 1. Adapter Definition
 
 An **adapter** is a repository that:
-- Consumes the core contract layer from `@arcsight/wedge/core`
+- Consumes the core contract layer from `@arcsight-ai/wedge/core`
 - Wraps or transforms wedge output for a specific runtime (GitHub, CLI, etc.)
 - Does **NOT** define core contracts locally
 - May define adapter-specific contracts (e.g., `src/contracts/github-*`)
@@ -26,7 +26,7 @@ An **adapter** is a repository that:
 
 ### 2.1 Required Imports
 
-All core contract types MUST be imported from `@arcsight/wedge/core`:
+All core contract types MUST be imported from `@arcsight-ai/wedge/core`:
 
 ```typescript
 // ✅ CORRECT
@@ -38,7 +38,7 @@ import {
   EnvelopeSchema,
   PRSummary,
   CONTRACT_VERSION
-} from "@arcsight/wedge/core";
+} from "@arcsight-ai/wedge/core";
 
 // ❌ INCORRECT - Local core contracts
 import { Violation } from "../src/core/violation";
@@ -69,7 +69,7 @@ Adapters MUST declare their supported contract version by importing `CONTRACT_VE
 
 ```typescript
 // src/contractSupport.ts
-import { CONTRACT_VERSION } from "@arcsight/wedge/core";
+import { CONTRACT_VERSION } from "@arcsight-ai/wedge/core";
 
 export const SUPPORTED_CONTRACT_VERSION = CONTRACT_VERSION;
 ```
@@ -78,8 +78,8 @@ export const SUPPORTED_CONTRACT_VERSION = CONTRACT_VERSION;
 
 CI MUST verify:
 1. No rogue core contracts in `src/core/` or `src/contracts/core/`
-2. `SUPPORTED_CONTRACT_VERSION` matches `CONTRACT_VERSION` from `@arcsight/wedge/core`
-3. All core contract imports reference `@arcsight/wedge/core`
+2. `SUPPORTED_CONTRACT_VERSION` matches `CONTRACT_VERSION` from `@arcsight-ai/wedge/core`
+3. All core contract imports reference `@arcsight-ai/wedge/core`
 
 ---
 
@@ -124,7 +124,7 @@ GitHub Actions MUST:
 
 ```typescript
 // ✅ CORRECT - Import from wedge/core
-import { Violation, EnvelopeSchema, CONTRACT_VERSION } from "@arcsight/wedge/core";
+import { Violation, EnvelopeSchema, CONTRACT_VERSION } from "@arcsight-ai/wedge/core";
 import { SUPPORTED_CONTRACT_VERSION } from "./contractSupport";
 
 // ✅ CORRECT - Adapter-specific contract
@@ -138,7 +138,7 @@ import { Violation } from "./core/violation";
 
 ```typescript
 // ✅ CORRECT - Import from wedge/core
-import { Rulepack, Snapshot, Analyzer } from "@arcsight/wedge/core";
+import { Rulepack, Snapshot, Analyzer } from "@arcsight-ai/wedge/core";
 
 // ✅ CORRECT - Adapter-specific contract
 import { CLIOutputFormat } from "./contracts/cli-output";
