@@ -156,7 +156,7 @@ Any change to frozen components **MUST** include:
    - `src/versions/rulepackVersions.ts` (for rulepack changes)
 
 2. **Contract documentation** update:
-   - Update relevant contract documents in `docs/`
+   - Update relevant contract documents in the docs-submodule
    - Document breaking changes
    - Provide migration guide if needed
 
