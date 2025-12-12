@@ -1,0 +1,9 @@
+{
+  "contractLayerVersion": "v1.3.0",
+  "breaking": false,
+  "changes": [
+    "Added waiver expiry warnings",
+    "Added effectiveViolations field"
+  ]
+}
+
