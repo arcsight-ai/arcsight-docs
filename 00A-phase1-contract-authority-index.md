@@ -110,6 +110,11 @@ This index classifies all Tier B contract documents (per [Documentation Index](.
 - **[18 — Enterprise Extension Namespaces](./18-enterprise-extension-namespaces.md)**  
   Defines enterprise-level extension mechanisms. Phase 2+ feature for extensibility.
 
+### 4.3 Governance Documents (Planning-Only)
+
+- **[24 — Viral Growth Ledger](./24-viral-growth-ledger.md)**  
+  Strategic planning document that explicitly forbids viral features until Phase 2.5. Serves as a guardrail against scope creep and preserves Phase 1/2 determinism. **Implementation forbidden until Phase 2.5.**
+
 ---
 
 ## 5. Rulepack v1 Contract Files

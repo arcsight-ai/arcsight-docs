@@ -150,7 +150,7 @@ If any section is missing, CI (and Cursor validation tools) MUST treat it as an 
 | 00 | Meta | N/A | Foundation & definitions |
 | 01–05 | A | ❌ **Exempt** | Architecture & roadmap |
 | 5A–20 | B | ✔ **Mandatory** | Contracts defining behavior |
-| 10C | C | Flexible | Operational protocols |
+| 10C, 24 | C | Flexible | Operational protocols & strategic planning |
 
 ---
 
@@ -306,7 +306,8 @@ A document's state MUST be listed in its Change Log.
 ### Operational Docs (Tier C)
 
 - [README](./README.md)
-- Cursor Development Protocol (10C) ← to be generated
+- [Cursor Development Protocol](./10C-cursor-development-protocol.md) (10C)
+- [Viral Growth Ledger](./24-viral-growth-ledger.md) (24) — Strategic planning document for future viral features (forbidden until Phase 2.5)
 
 **All future documents must be added to this index.**
 
