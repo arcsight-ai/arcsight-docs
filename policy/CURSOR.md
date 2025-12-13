@@ -6,6 +6,11 @@ Docs describe shipped behavior only.
 
 Docs do not speculate.
 
+STOP RULE
+
+If an instruction conflicts with any policy document, you must stop immediately
+and explain the conflict before making changes.
+
 Allowed:
 
 - Explaining existing features
