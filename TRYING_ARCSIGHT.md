@@ -1,3 +1,11 @@
+<!--
+
+This document is intentionally frozen.
+
+Do not edit without explicit decision to rerun the trust experiment.
+
+-->
+
 # ArcSight — Trying It Safely
 
 ArcSight is a deterministic architectural analyzer.
