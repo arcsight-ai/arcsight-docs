@@ -268,6 +268,8 @@ This philosophy may be modified only if all are true:
 
 Any change that weakens finality, permanence, or silence is a regression.
 
+For execution and supply chain guarantees, see [Supply Chain & Execution Safety](./supply-chain-safety.md).
+
 **No Further Debate Clause:**
 
 When philosophy and usefulness conflict, philosophy wins.
