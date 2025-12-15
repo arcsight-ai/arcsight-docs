@@ -1,259 +1,291 @@
-# ArcSight Wedge Philosophy
+⚠️ LOCKED DOCUMENT
 
-**Version:** 1.0  
-**Status:** GUIDING PRINCIPLES  
-**Effective Date:** Phase 1
+This document defines ArcSight's permanent posture.
 
----
+Any change that weakens these principles is a regression.
 
-## Purpose
-
-This document articulates the core philosophy behind the ArcSight Wedge engine. It explains **why** we make certain design decisions and helps prevent product dilution and accidental contract breaks.
+See Section 10 (Governance).
 
 ---
 
-## Core Principles
+# ArcSight — Philosophy & Operating Model (Locked)
 
-### 1. Determinism First
+This document defines ArcSight's permanent posture. Any change that weakens these principles is a regression.
 
-**Why it matters:**
+## 1. What ArcSight Is (Locked)
 
-Determinism is not a feature—it's a **requirement**. Without determinism:
-- Results cannot be trusted
-- Debugging becomes impossible
-- Reproducibility is lost
-- CI/CD integration fails
+ArcSight reports observed architectural facts.
 
-**What it means:**
+These facts are:
 
-- Identical inputs → Identical outputs
-- No timestamps, random numbers, or environment dependencies
-- Byte-for-byte identical outputs across runs
-- Golden tests enforce determinism
+* Deterministic — reproducible on any machine
 
-**How we enforce it:**
+* Provable — derived from language semantics and structural graphs
 
-- All outputs are sorted explicitly
-- All dates are injected (never read from system)
-- All random operations are forbidden
-- Golden tests verify determinism (3× runs)
+* Irreversible — they cannot become false without code changes
+
+* Non-argumentative — they require no interpretation
+
+* Safe to suppress — silence is preferred to uncertainty
+
+Observed facts may be incomplete by design. Absence of a signal does not imply absence of structure.
+
+ArcSight does not explain, recommend, rank, or enforce by default. Details are always opt-in.
+
+This is the core identity. Everything else serves it.
+
+## 2. Silence Semantics (Constitutional)
+
+Silence is an intentional outcome, not an error state.
+
+* Silence indicates that ArcSight chose not to surface a signal
+
+* Silence does not imply:
+
+    * completeness
+
+    * safety
+
+    * absence of structure
+
+    * absence of risk
+
+Silence means:
+
+"No architectural fact met the bar for safe, final reporting."
+
+Silence must never be replaced with speculation, approximation, or guidance.
+
+This rule is absolute.
+
+## 3. The Three Gates for Core Signals (Frozen)
+
+A signal may appear in ArcSight's default summary only if all three are true:
+
+1️⃣ Provable
+
+It is derivable from language semantics or structural graphs — not heuristics.
+
+2️⃣ Irreversible
+
+If it exists, the only way to make it disappear is to change the code.
+
+3️⃣ Permanent
+
+Once introduced, it is structurally expected to persist unless consciously removed.
+
+Permanence refers to architectural nature, not historical duration.
+
+Default summary = final + permanent only
+
+Anything else belongs in:
+
+* --details
+
+* history
+
+* rulepacks
+
+* CI enforcement (explicitly wired)
+
+This rule must never be weakened.
+
+## 4. Architectural Finality (Bounded Expansion)
+
+Final signals may be added over time. The definition of final must never loosen.
+
+### Language-Scoped Finality
+
+Final signals are scoped to language semantics, not universal across ecosystems.
+
+Examples (illustrative only):
+
+* JS / TS — import cycles, declared boundary violations
+
+* Go — import cycles, init dependency loops
+
+* Rust — ownership graph contradictions
+
+* JVM — module / classloader boundary violations
+
+Final signals must be grounded in:
+
+* compiler behavior
+
+* resolvers
+
+* dependency graphs
+
+They must not be grounded in:
+
+* framework idioms
+
+* community best practices
+
+* stylistic norms
+
+Finality is:
+
+* closed per language
+
+* open over time
+
+* explicitly versioned
+
+## 5. Rulepacks: Preferences Without Corruption
+
+Rulepacks encode organizational preferences, not architectural facts.
+
+They may include:
+
+* thresholds
+
+* policies
+
+* conventions
+
+* enforcement choices
+
+Rules:
+
+* Rulepacks are user-authored
+
+* Rulepack failures never change default summary
+
+* Rulepack output is visually and semantically segregated
+
+* ArcSight evaluates rulepacks but never endorses them
+
+* Rulepack output must be phrased as evaluation, never as fact
+
+Example:
+
+* ❌ "Layer violation detected"
+
+* ✅ "Rulepack evaluated this as a violation"
+
+ArcSight reports facts. Teams decide what they care about.
+
+This line is sacred.
+
+## 6. Architectural Memory (Append-Only)
+
+ArcSight is not a diagnostic tool. It is a structural memory system.
+
+Principles:
+
+* Architectural memory is append-only
+
+* Facts may resolve; history is never rewritten
+
+* Replays must be reproducible
+
+* Time is a first-class dimension, not a score
+
+This enables:
+
+* defensible reviews
+
+* institutional memory
+
+* blame-free accountability
+
+## 7. Explicit Refusals (Permanent)
+
+These are non-goals.
+
+❌ ArcSight Will Never Rank Architecture  
+No scores, grades, maturity ladders, or comparisons.
+
+❌ ArcSight Will Never Predict Risk  
+No probabilities, likelihoods, forecasts, or danger zones.
+
+❌ ArcSight Will Never Suggest Refactors  
+No fixes, advice, or best practices.
+
+❌ ArcSight Will Never Infer Intent  
+Only what exists structurally is observed.
+
+Requests that violate these are rejected by design.
+
+## 8. Expansion Model (Safe Forever)
+
+ArcSight expands by asking the same question at larger scopes:
+
+"What here is structurally true and non-negotiable?"
+
+Valid expansion axes:
+
+* file → module → package → subsystem
+
+* repo → multi-repo → org graph
+
+* snapshot → history → lineage
+
+Invalid axes:
+
+* heuristics
+
+* AI judgment
+
+* productivity metrics
+
+* opinionated guidance
+
+Same discipline. Larger surface.
+
+## 9. Emotional & Social Contract
+
+ArcSight must never be the thing engineers argue with.
+
+Instead:
+
+* engineers argue with facts (rare)
+
+* or with their own rulepacks
+
+This makes ArcSight safe in:
+
+* CI
+
+* design reviews
+
+* post-mortems
+
+* enterprise governance
+
+## 10. Governance (Non-Optional)
+
+This philosophy may be modified only if all are true:
+
+* The change is backward-compatible with existing summaries
+
+* Silence semantics are preserved
+
+* No new signal bypasses the three gates
+
+* The change is justified by a concrete, provable counterexample
+
+Any change that weakens finality, permanence, or silence is a regression.
 
 ---
 
-### 2. Adapters Are Thin
+## Final Assessment
 
-**Why it matters:**
+This version is:
 
-The engine is the **source of truth**. Adapters (CLI, GitHub PR) are **presentation layers** that format engine output. Keeping adapters thin:
-- Prevents logic duplication
-- Ensures consistency across adapters
-- Makes testing easier
-- Preserves engine purity
+* future-proof
 
-**What it means:**
+* legally defensible
 
-- Engine produces canonical output
-- Adapters format output (JSON, Markdown)
-- No business logic in adapters
-- Adapters are deterministic formatters
+* enterprise-safe
 
-**How we enforce it:**
+* culturally rare
 
-- Engine output is fully canonicalized
-- Adapters use pure formatting functions
-- No adapter-specific logic
-- Cross-adapter consistency tests
+* extremely hard to copy
 
----
+Most tools collapse under success. This document is how ArcSight doesn't.
 
-### 3. Waivers Are Annotations
+Nothing else should be added now.
 
-**Why it matters:**
-
-Waivers are **audit trails**, not suppressions. They:
-- Preserve violation history
-- Enable governance oversight
-- Support compliance reporting
-- Maintain transparency
-
-**What it means:**
-
-- Waivers **annotate** violations (never remove them)
-- Waived violations are visible in summaries
-- Waivers are excluded from risk scoring (via `effectiveViolations`)
-- Waiver application is fully auditable
-
-**How we enforce it:**
-
-- Violations are never deleted
-- Waiver metadata is stored in `extension_data`
-- Waiver application is deterministic
-- Waiver history is preserved
-
----
-
-### 4. Contracts Are Immutable
-
-**Why it matters:**
-
-Contracts define **guarantees**. Breaking contracts:
-- Breaks consumer trust
-- Causes integration failures
-- Creates maintenance burden
-- Violates determinism
-
-**What it means:**
-
-- Phase 1–3.3 contracts are **frozen**
-- Changes require version bumps
-- Backward compatibility is maintained
-- Breaking changes are explicitly documented
-
-**How we enforce it:**
-
-- Frozen boundaries document (`frozen-boundaries.md`)
-- Contract validation in tests
-- Version bump requirements
-- Integration audit verifies contracts
-
----
-
-### 5. Fail-Safe by Default
-
-**Why it matters:**
-
-Safety is more important than features. The engine:
-- Fails closed (silent mode) on ambiguity
-- Never mutates inputs
-- Never throws unhandled errors
-- Never breaks determinism
-
-**What it means:**
-
-- Errors trigger silent mode (no output)
-- Invalid inputs are rejected gracefully
-- Waiver failures don't break engine
-- Determinism violations are caught
-
-**How we enforce it:**
-
-- Silent mode on errors
-- Input validation
-- Error handling in all paths
-- Determinism tests catch violations
-
----
-
-## Design Decisions
-
-### Why No Timestamps?
-
-Timestamps break determinism. The same code run at different times produces different outputs. We use **injected evaluation dates** instead.
-
-### Why No Random Numbers?
-
-Random numbers break determinism. We use **deterministic hashing** (SHA-256) for IDs and fingerprints.
-
-### Why Explicit Sorting?
-
-Implicit sorting (e.g., `Object.keys()` iteration order) is not guaranteed. We **explicitly sort** all arrays and objects before output.
-
-### Why Thin Adapters?
-
-Thick adapters duplicate logic and create inconsistencies. We keep adapters **thin** and move all logic to the engine.
-
-### Why Annotate, Not Suppress?
-
-Suppressing violations hides problems. We **annotate** violations with waiver metadata, preserving audit trails.
-
----
-
-## Anti-Patterns
-
-### ❌ Adding Features to Frozen Components
-
-**Problem:** Breaks contracts, violates determinism
-
-**Solution:** Create new components or version bump
-
-### ❌ Using System Time
-
-**Problem:** Breaks determinism
-
-**Solution:** Inject evaluation date as parameter
-
-### ❌ Mutating Inputs
-
-**Problem:** Breaks immutability, causes side effects
-
-**Solution:** Always clone inputs before modifying
-
-### ❌ Logic in Adapters
-
-**Problem:** Duplicates logic, creates inconsistencies
-
-**Solution:** Move logic to engine, keep adapters thin
-
-### ❌ Suppressing Violations
-
-**Problem:** Hides problems, breaks audit trail
-
-**Solution:** Annotate violations, exclude from scoring
-
----
-
-## For New Contributors
-
-### Before You Code
-
-1. **Read the contracts** (`module-contracts/`)
-2. **Understand determinism** (`determinism-rules.md`)
-3. **Check frozen boundaries** (`frozen-boundaries.md`)
-4. **Review philosophy** (this document)
-
-### When You Code
-
-1. **Inject dates** (never use `Date.now()`)
-2. **Sort explicitly** (never rely on iteration order)
-3. **Clone inputs** (never mutate)
-4. **Write golden tests** (verify determinism)
-
-### After You Code
-
-1. **Run determinism tests** (3× repeated runs)
-2. **Check contract compliance** (validate schemas)
-3. **Verify no mutations** (deep clone checks)
-4. **Update documentation** (if contracts change)
-
----
-
-## Long-Term Vision
-
-### Phase 1–3.3: Core Engine (FROZEN)
-
-- Deterministic engine
-- Thin adapters
-- Waiver system
-- Contract compliance
-
-### Phase 4+: Adoption Features
-
-- New features in new components
-- No changes to frozen components
-- Version bumps for breaking changes
-- Backward compatibility maintained
-
----
-
-## Related Documents
-
-- `frozen-boundaries.md` — Frozen component boundaries
-- `determinism-rules.md` — Determinism requirements
-- `phase3.1-waiver-audit.md` — Waiver system audit
-- Contract documents in `module-contracts/`
-
----
-
-**Last Updated:** Phase 3.4  
-**Status:** Guiding Principles
-
+Next work should be observation, not building.
