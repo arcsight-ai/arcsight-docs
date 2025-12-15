@@ -2,7 +2,8 @@
 
 Welcome to the ArcSight project documentation. This repository contains comprehensive documentation for the ArcSight system architecture, development phases, and migration strategies.
 
-**ArcSight Constitution:** see [`docs/CONSTITUTION.md`](./docs/CONSTITUTION.md).
+**ArcSight Constitution:** see [`docs/CONSTITUTION.md`](./docs/CONSTITUTION.md).  
+**ArcSight v1 Scope:** see [`docs/V1_SCOPE.md`](./docs/V1_SCOPE.md).
 
 > **📋 Start here:** [Documentation Index & Authoring Protocol](./00-docs-index-and-authoring-protocol.md) — The canonical root document that defines the complete documentation structure, authoring rules, and governance.
 
