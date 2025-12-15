@@ -16,7 +16,24 @@ No other shared types are allowed in V1 without ADR.
 
 ---
 
-## 1. CanonicalCycle
+## 1. CertaintyGap
+
+```ts
+export enum CertaintyGap {
+  Structural = "Structural",
+  Semantic = "Semantic",
+  Temporal = "Temporal",
+  Epistemic = "Epistemic",
+}
+```
+
+CertaintyGap classifies the architectural certainty gap that a signal reduces.
+
+See ADR-001 — Certainty Gap Signal Invariant.
+
+---
+
+## 2. CanonicalCycle
 
 ```ts
 export type CanonicalCycle = string;
@@ -34,7 +51,7 @@ A CanonicalCycle is a fully normalized, deterministic string representation of a
 
 ---
 
-## 2. ImportGraph
+## 3. ImportGraph
 
 ```ts
 export interface ImportGraph {
@@ -55,7 +72,7 @@ export type ImportGraphList = ImportGraph[];
 
 ---
 
-## 3. RootCauseEdge
+## 4. RootCauseEdge
 
 ```ts
 export interface RootCauseEdge {
@@ -78,7 +95,7 @@ If no such edge can be identified with certainty, no RootCauseEdge is emitted fo
 
 ---
 
-## 4. SegmentationQuality
+## 5. SegmentationQuality
 
 ```ts
 export type AliasStatus = "ok" | "uncertain";
@@ -108,7 +125,7 @@ These fields are the only inputs to `computeConfidence`.
 
 ---
 
-## 5. CycleSnapshot
+## 6. CycleSnapshot
 
 ```ts
 export interface CycleSnapshot {
@@ -131,10 +148,12 @@ Snapshots are not interpreted by the wedge in V1 (no drift, no trends).
 
 ---
 
-## 6. PRCycleAnalysis
+## 7. PRCycleAnalysis
 
 ```ts
 export interface PRCycleAnalysis {
+  /** Certainty gap reduced by this architectural signal (required). See ADR-001 — Certainty Gap Signal Invariant. */
+  certaintyGap: CertaintyGap;
   /** Canonical cycles that are new in this PR and pass all filters */
   relevantCycles: CanonicalCycle[];
   /** Root-cause edges for relevant cycles */
