@@ -1,3 +1,9 @@
+This document enforces [philosophy.md](../philosophy.md).
+
+Any conflict must be resolved in favor of the philosophy.
+
+---
+
 # Final Signal Admission Checklist
 
 A signal may appear in ArcSight's default summary only if all are true:

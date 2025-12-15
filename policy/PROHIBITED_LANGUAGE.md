@@ -1,3 +1,9 @@
+This document enforces [philosophy.md](../philosophy.md).
+
+Any conflict must be resolved in favor of the philosophy.
+
+---
+
 # Prohibited Language (Global)
 
 The following terms must never appear in default outputs:
