@@ -82,6 +82,12 @@ Batch 2 and beyond will extend SSOT after generation.
 
 ---
 
+## Policy Enforcement
+
+`policy/FINAL_SIGNAL_ADMISSION_CHECKLIST.md` contains the authoritative interpretation for classifying signals as Discover or Check.
+
+---
+
 ## Cursor Instruction
 
 Cursor MUST treat SSOT as the **ultimate truth index**.  
