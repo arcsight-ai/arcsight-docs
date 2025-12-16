@@ -49,3 +49,20 @@ Assume it does not.
 
 📚 Docs stay honest
 
+---
+
+## Structural Enforcement
+
+When adding or modifying code:
+
+- All files must conform to the Structural Classification Contract.
+- File location determines allowed responsibilities and dependencies.
+- If logic appears to violate its classification, STOP and report.
+- Do not relocate logic across classifications without explicit instruction.
+- Do not invent new structural categories.
+
+If a file does not clearly belong to a known classification,
+treat it as an architectural error and halt.
+
+Cursor must enforce structure, not reinterpret intent.
+
