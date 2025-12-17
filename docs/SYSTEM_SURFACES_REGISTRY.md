@@ -192,3 +192,4 @@ Changes require explicit architectural decision and must not weaken the boundari
 
 See [CONSTITUTION.md](./CONSTITUTION.md) and [philosophy.md](../philosophy.md).
 
+
